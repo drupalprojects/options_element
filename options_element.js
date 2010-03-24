@@ -5,6 +5,8 @@
  * Add JavaScript behaviors for the "options" form element type.
  */
 
+(function($) {
+
 Drupal.optionElements = Drupal.optionElements || {};
 
 Drupal.behaviors.optionsElement = function(context) {
@@ -40,7 +42,7 @@ Drupal.optionsElement = function(element) {
   this.keyChangeWarning = Drupal.t('Custom keys have been specified in this list. Removing these custom keys may change way data is stored. Are you sure you wish to remove these custom keys?');
 
   // Setup new DOM elements containing the actual options widget.
-  this.optionsElement = $('<div></div>').get(0); // Temporary DOM object. 
+  this.optionsElement = $('<div></div>').get(0); // Temporary DOM object.
   this.optionsToggleElement = $(Drupal.theme('optionsElementToggle')).get(0);
   this.optionAddElement = $(Drupal.theme('optionsElementAdd')).get(0);
 
@@ -627,7 +629,7 @@ Drupal.optionsElement.prototype.optionsFromText = function() {
   }
 
   return options;
-}
+};
 
 /**
  * Utility method to get the next numeric option in a list of options.
@@ -644,7 +646,7 @@ Drupal.optionsElement.prototype.nextNumericKey = function(options) {
     }
   }
   return maxKey + 1;
-}
+};
 
 /**
  * Theme function for creating a new options element.
@@ -722,15 +724,15 @@ Drupal.theme.prototype.optionsElement = function(optionsElement) {
   output += '<div>';
 
   return output;
-}
+};
 
 Drupal.theme.prototype.optionsElementAdd = function() {
   return '<div class="form-option-add"><a href="#">' + Drupal.t('Add item') + '</a></div>';
-}
+};
 
 Drupal.theme.prototype.optionsElementToggle = function() {
   return '<div class="form-options-manual"><a href="#">' + Drupal.t('Manual entry') + '</a></div>';
-}
+};
 
 Drupal.theme.tableDragChangedMarker = function () {
   return ' ';
@@ -738,4 +740,6 @@ Drupal.theme.tableDragChangedMarker = function () {
 
 Drupal.theme.tableDragChangedWarning = function() {
   return ' ';
-}
+};
+
+})(jQuery);
