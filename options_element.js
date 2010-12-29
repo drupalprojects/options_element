@@ -71,7 +71,7 @@ Drupal.optionsElement = function(element) {
         var options = self.optionsFromText();
         var confirm = false;
         if (self.keyType == 'associative') {
-          for (var n in options) {
+          for (var n = 0; n < options.length; n++) {
             if (options[n].key != options[n].value) {
               confirm = true;
               break;
@@ -585,7 +585,7 @@ Drupal.optionsElement.prototype.optionsFromText = function() {
   if (this.manualDefaultValueElement) {
     if (this.multiple) {
       var defaults = this.manualDefaultValueElement.value.split(',');
-      for (var n in defaults) {
+      for (var n = 0; n < options.length; n++) {
         var defaultValue = defaults[n].replace(/^[ ]*(.*?)[ ]*$/, '$1'); // trim().
         defaultValues[defaultValue] = defaultValue;
       }
@@ -649,7 +649,7 @@ Drupal.optionsElement.prototype.optionsFromText = function() {
   // Convert options to numeric if no key is specified.
   if (this.keyType == 'numeric') {
     var nextKey = this.nextNumericKey();
-    for (var n in options) {
+    for (var n = 0; n < options.length; n++) {
       if (options[n].key == '') {
         options[n].key = nextKey;
         nextKey++;
@@ -669,7 +669,7 @@ Drupal.optionsElement.prototype.nextNumericKey = function(options) {
   this.keyType = 'numeric';
 
   var maxKey = -1;
-  for (var n in options) {
+  for (var n = 0; n < options.length; n++) {
     if (options[n].key.match(/^[0-9]+$/)) {
       maxKey = Math.max(maxKey, options[n].key);
     }
@@ -741,7 +741,7 @@ Drupal.theme.prototype.optionsElement = function(optionsElement) {
     options.push(newOption);
   }
 
-  for (var n in options) {
+  for (var n = 0; n < options.length; n++) {
     var option = options[n];
     var depth = option.parent === '' ? 0 : 1;
     var checked = !option.hasChildren && option.checked;
