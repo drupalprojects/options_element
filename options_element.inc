@@ -170,7 +170,7 @@ function _form_options_expand($element) {
     $element['default_value_pattern'] = array(
       '#type' => 'hidden',
       '#value' => $element['#default_value_pattern'],
-      '#attributes' => array('class' => array('default-value-pattern')),
+      '#attributes' => array('class' => 'default-value-pattern'),
     );
   }
 
