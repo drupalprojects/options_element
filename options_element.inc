@@ -36,8 +36,8 @@ function theme_options($element) {
 
   // Replace the error class from wrapper div, which doesn't display well with
   // complex elements like Options Element.
-  if ($key = array_search('error', $element['#attributes']['class'], TRUE)) {
-    $element['#attributes']['class'][$key] = 'options-error';
+  if ($key = array_search('error', $classes, TRUE)) {
+    $classes[$key] = 'options-error';
   }
 
   $options = '';
