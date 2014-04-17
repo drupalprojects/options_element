@@ -8,6 +8,11 @@
 
 Drupal.optionElements = Drupal.optionElements || {};
 
+// We need to check/set HTML properties frequently, such as the disabled and
+// checked state of elements. In jQuery 1.6+, the "prop" method was added for
+// this purpose, but in earlier versions you had to use "attr".
+$.fn.oeProp = $.fn.prop ? $.fn.prop : $.fn.attr;
+
 Drupal.behaviors.optionsElement = function(context) {
   $('div.form-options:not(.options-element-processed)', context).each(function() {
     $(this).addClass('options-element-processed');
@@ -36,8 +41,7 @@ Drupal.optionsElement = function(element) {
   this.keyType = element.className.replace(/^.*?options-key-type-([a-z]+).*?$/, '$1');
   this.customKeys = Boolean(element.className.match(/options-key-custom/));
   this.identifier = this.manualOptionsElement.id + '-widget';
-  // jQuery 1.6 API change: http://api.jquery.com/prop/
-  this.enabled = $.fn.prop ? !$(this.manualOptionsElement).prop('readonly') : !$(this.manualOptionsElement).attr('readonly');
+  this.enabled = !$(this.manualOptionsElement).oeProp('readonly');
   this.defaultValuePattern = $(element).find('input.default-value-pattern').val();
 
   if (this.defaultValuePattern) {
@@ -74,14 +78,14 @@ Drupal.optionsElement = function(element) {
 
   // Enable the remove default link.
   $(this.removeDefaultElement).find('a').click(function() {
-    $(self.element).find('input.option-default').removeAttr('checked').trigger('change');
+    $(self.element).find('input.option-default').oeProp('checked', false).trigger('change');
     return false;
   });
 
   // Add a handler for key type changes.
   if (this.keyTypeToggle) {
     $(this.keyTypeToggle).click(function() {
-      var checked = $(this).attr('checked');
+      var checked = $(this).oeProp('checked');
       // Before switching the key type, ensure we're not destroying user keys.
       if (!checked) {
         var options = self.optionsFromText();
@@ -112,7 +116,7 @@ Drupal.optionsElement = function(element) {
   // Add a handler for multiple value changes.
   if (this.multipleToggle) {
     $(this.multipleToggle).click(function(){
-      self.setMultiple($(this).attr('checked'));
+      self.setMultiple($(this).oeProp('checked'));
     });
   }
 
@@ -309,10 +313,10 @@ Drupal.optionsElement.prototype.updateOptionElements = function() {
 
     if (depth == 1) {
       // Affect the parent row, adjusting properties for optgroup items.
-      $(previousElement).attr('disabled', true).attr('checked', false);
+      $(previousElement).oeProp('disabled', true).oeProp('checked', false);
       $(previousRow).addClass('optgroup').find('a.add, a.remove').css('display', 'none');
       $(this).find('a.add, a.remove').css('display', '');
-      $(defaultInput).attr('disabled', false);
+      $(defaultInput).oeProp('disabled', false);
 
       // Hide the key column for the optgroup.
       if (self.customKeys) {
@@ -322,7 +326,7 @@ Drupal.optionsElement.prototype.updateOptionElements = function() {
     }
     else {
       // Set properties for normal options that are not optgroups.
-      $(defaultInput).attr('disabled', false);
+      $(defaultInput).oeProp('disabled', false);
       $(this).removeClass('optgroup').find('a.add, a.remove').css('display', '');
 
       // Hide the key column.
@@ -355,7 +359,7 @@ Drupal.optionsElement.prototype.addOption = function(currentOption) {
   var newOption = $(currentOption).clone()
     .find('input.option-key').val(self.keyType == 'numeric' ? self.nextNumericKey() : '').end()
     .find('input.option-value').val('').end()
-    .find('input.option-default').attr('checked', false).end()
+    .find('input.option-default').oeProp('checked', false).end()
     .find('a.tabledrag-handle').remove().end()
     .removeClass('drag-previous')
     .insertAfter(currentOption)
@@ -432,11 +436,11 @@ Drupal.optionsElement.prototype.toggleMode = function() {
  */
 Drupal.optionsElement.prototype.enable = function() {
   this.enabled = true;
-  $(this.manualOptionsElement).attr('readonly', '');
+  $(this.manualOptionsElement).oeProp('readonly', false);
   $(this.element).removeClass('options-disabled');
 
   $('a.add, a.remove, a.tabledrag-handle, div.form-option-add a', this.element).css('display', '');
-  $('input.form-text', this.optionsElement).attr('disabled', '');
+  $('input.form-text', this.optionsElement).oeProp('disabled', false);
 };
 
 /**
@@ -444,11 +448,11 @@ Drupal.optionsElement.prototype.enable = function() {
  */
 Drupal.optionsElement.prototype.disable = function() {
   this.enabled = false;
-  $(this.manualOptionsElement).attr('readonly', true);
+  $(this.manualOptionsElement).oeProp('readonly', true);
   $(this.element).addClass('options-disabled');
 
   $('a.add, a.remove, a.tabledrag-handle, div.form-option-add a', this.element).css('display', 'none');
-  $('input.form-text', this.optionsElement).attr('disabled', 'disabled');
+  $('input.form-text', this.optionsElement).oeProp('disabled', true);
 };
 
 /**
@@ -490,7 +494,7 @@ Drupal.optionsElement.prototype.setMultiple = function(multiple) {
   }
   else {
     // Unselect all default options except the first.
-    $(this.optionsElement).find('input.option-default:checked:not(:first)').attr('checked', false);
+    $(this.optionsElement).find('input.option-default:checked:not(:first)').oeProp('checked', false);
     this.updateManualElements();
     $(this.element).removeClass('options-multiple');
   }
